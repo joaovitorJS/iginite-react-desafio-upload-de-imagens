@@ -60,7 +60,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   };
 
   const handleNewImageUpload = async (newDataImage: NewDataImage) => {
-    return await api.post('/images', newDataImage);
+    return await api.post('/api/images', newDataImage);
   }
 
   const queryClient = useQueryClient();
@@ -84,8 +84,6 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const onSubmit = async (data: Record<string, unknown>): Promise<void> => {
     
     try {
-      console.log(imageUrl);
-      // TODO SHOW ERROR TOAST IF IMAGE URL DOES NOT EXISTS
       if (imageUrl?.trim() === '') {
         toast({
           title: "Imagem não adicionada",
@@ -103,22 +101,18 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         description: data.description,
         url: imageUrl
       } as NewDataImage;
-      // TODO EXECUTE ASYNC MUTATION
-      const response = await mutation.mutateAsync(newImage);
-
-      // TODO SHOW SUCCESS TOAST
-      if (response.data?.success) {
-        toast({
-          title: "Imagem cadastrada",
-          description: "Sua imagem foi cadastrada com sucesso.",
-          status: "success",
-          duration: 3000, // 3s
-          isClosable: true
-        });
-      }
+     
+      await mutation.mutateAsync(newImage);
+     
+      toast({
+        title: "Imagem cadastrada",
+        description: "Sua imagem foi cadastrada com sucesso.",
+        status: "success",
+        duration: 3000, // 3s
+        isClosable: true
+      });
 
     } catch {
-      // TODO SHOW ERROR TOAST IF SUBMIT FAILED
       toast({
         title: "Falha no cadastro",
         description: "Ocorreu um erro ao tentar cadastrar a sua imagem.",
@@ -127,16 +121,9 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
         isClosable: true
       });
     } finally {
-      // TODO CLEAN FORM, STATES AND CLOSE MODAL
-      reset({
-        image: '',
-        title: '',
-        description: ''
-      });
-      
+      reset();
       setImageUrl('');
       setLocalImageUrl('');
-
       closeModal();
     }
   };
